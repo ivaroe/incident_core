@@ -26,11 +26,15 @@ jobs:
         run: npx now-sdk build
 
       - name: Add ServiceNow auth
+        env:
+          SN_INSTANCE_URL: ${{ secrets.SN_INSTANCE_URL }}
+          SN_USERNAME: ${{ secrets.SN_USERNAME }}
+          SN_PASSWORD: ${{ secrets.SN_PASSWORD }}
         run: |
-          echo "${{ secrets.SN_PASSWORD }}" | npx @servicenow/sdk auth --add ${{ secrets.SN_INSTANCE_URL }} \
+          printf '%s' "$SN_PASSWORD" | npx @servicenow/sdk auth --add "$SN_INSTANCE_URL" \
             --type basic \
             --alias sn_deploy \
-            --username ${{ secrets.SN_USERNAME }} \
+            --username "$SN_USERNAME" \
             --password-stdin
 
       - name: Deploy to ServiceNow
