@@ -11,6 +11,7 @@ BusinessRule({
     table: 'incident',
     when: 'display',
     active: true,
+    description: 'Passes the original assignment group to client scripts via g_scratchpad',
     script: Now.include('../../server/BusinessRule/setOriginalAG.server.js'),
 })
 
