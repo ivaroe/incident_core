@@ -1,0 +1,37 @@
+name: Deploy to ServiceNow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npx now-sdk build
+
+      - name: Add ServiceNow auth
+        run: |
+          echo "${{ secrets.SN_PASSWORD }}" | npx @servicenow/sdk auth --add ${{ secrets.SN_INSTANCE_URL }} \
+            --type basic \
+            --alias sn_deploy \
+            --username ${{ secrets.SN_USERNAME }} \
+            --password-stdin
+
+      - name: Deploy to ServiceNow
+        run: npx now-sdk install --auth sn_deploy
